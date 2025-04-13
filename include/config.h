@@ -35,19 +35,12 @@
 #define TOOLS_DOWNLOAD_FOLDER "tools"
 #define BACKUP_FOLDER "backup"
 
-// Base URL to parse for the tools
-#define FUSION_BASE_URL "http://softwareupdate.vmware.com/cds/vmw-desktop/fusion/"
+// Direct URLs to the tools
+#define DARWIN_ISO_URL "https://packages-prod.broadcom.com/tools/frozen/darwin/darwin.iso"
+#define DARWIN_PRE15_ISO_URL "https://packages-prod.broadcom.com/tools/frozen/darwin/darwinPre15.iso"
 
-// Relative URLs and file names to be appended to version/build numbers
-#define FUSION_DEF_CORE_LOC "/universal/core/com.vmware.fusion.zip.tar"
-#define FUSION_DEF_CORE_NAME "com.vmware.fusion.zip.tar"
-#define FUSION_DEF_CORE_NAME_ZIP "com.vmware.fusion.zip"
-
-// Tools locations in the core TAR
-#define FUSION_ZIP_TOOLS_ISO "payload/VMware Fusion.app/Contents/Library/isoimages/" ARCH "/darwin.iso"
+// Keep these definitions for file naming consistency
 #define FUSION_ZIP_TOOLS_NAME "darwin.iso"
-
-#define FUSION_ZIP_PRE15_TOOLS_ISO "payload/VMware Fusion.app/Contents/Library/isoimages/" ARCH "/darwinPre15.iso"
 #define FUSION_ZIP_PRE15_TOOLS_NAME "darwinPre15.iso"
 
 // Pattern to parse the versions/builds

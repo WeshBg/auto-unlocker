@@ -1,5 +1,6 @@
 #ifndef PATCHRESULT_H
 #define PATCHRESULT_H
+#include <string>
 
 struct PatchResult
 {

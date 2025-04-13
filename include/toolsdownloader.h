@@ -18,13 +18,12 @@ public:
 class ToolsDownloader
 {
 public:
-	ToolsDownloader(Network& network, const std::string& baseUrl, const std::string& version);
+	// Simplified constructor - no need for baseUrl and version parameters
+	ToolsDownloader(Network& network);
 	bool download(const fs::path& to);
 private:
 	Network& network;
-	std::string baseUrl, versionNumber, versionUrl, buildurl;
-
-	bool downloadFromCore(const fs::path& to);
+	// Remove any unused member variables
 };
 
 #endif // TOOLSDOWNLOADER_H
