@@ -7,7 +7,7 @@
 */
 
 // Program options
-#define PROG_VERSION "v2.0.0"
+#define PROG_VERSION "v2.0.2"
 
 // File used for checking if the patch has been applied
 #define PATCH_VER_FILE ".unlocker"
