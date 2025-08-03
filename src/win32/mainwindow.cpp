@@ -211,9 +211,80 @@ void MainWindow::patchComplete(PatchResult result)
 			"Success", MB_OK | MB_ICONINFORMATION);
 	}
 	else {
-		char msg[4096];
-		sprintf(msg, "An error occurred while applying the patch:\n%s\nCheck the log file for detailed info:\n%s", result.errorMessage.c_str(), result.logFilePath.c_str());
-		MessageBox(hWnd, msg, "Error", MB_OK | MB_ICONERROR);
+		// Check if this is the exact "already patched" error
+		const std::string specificError = "The vmware installation you specified is already patched. Uninstall the previous patch first, or delete the .unlocker file (not suggested)";
+
+		if (result.errorMessage == specificError) {
+			// Create custom dialog with two buttons
+			TASKDIALOGCONFIG config = { 0 };
+			config.cbSize = sizeof(config);
+			config.hwndParent = hWnd;
+			config.dwFlags = TDF_POSITION_RELATIVE_TO_WINDOW;
+			config.dwCommonButtons = TDCBF_OK_BUTTON;
+			config.pszWindowTitle = L"Error";
+
+			// Format error message exactly as in the original MessageBox
+			std::string errorText = "An error occurred while applying the patch:\n" + 
+				result.errorMessage + 
+				"\nCheck the log file for detailed info:\n" + 
+				result.logFilePath;
+
+			// Convert to wide string for TaskDialog
+			std::wstring wErrorMsg;
+			wErrorMsg.assign(errorText.begin(), errorText.end());
+
+			config.pszContent = wErrorMsg.c_str();
+			config.pszMainIcon = TD_ERROR_ICON;
+
+			// Custom button - "Delete .unlocker file"
+			TASKDIALOG_BUTTON buttons[] = {
+				{ 1000, L"Delete .unlocker file" }
+			};
+			config.pButtons = buttons;
+			config.cButtons = ARRAYSIZE(buttons);
+
+			int buttonPressed = 0;
+			HRESULT hr = TaskDialogIndirect(&config, &buttonPressed, NULL, NULL);
+
+			if (SUCCEEDED(hr) && buttonPressed == 1000) {
+				// User clicked "Delete .unlocker file"
+				try {
+					fs::path vmwareInstallDir = fs::path(pathEditBox->getText());
+					PatchVersioner patchVersion(vmwareInstallDir);
+					patchVersion.removePatchVersion();
+
+					// Show success message
+					MessageBox(hWnd, "The .unlocker file has been successfully deleted. Restarting patch process...", 
+						"File Deleted", MB_OK | MB_ICONINFORMATION);
+
+					// Cleanup patcher task
+					if (patcherTask != nullptr) {
+						delete patcherTask;
+						patcherTask = nullptr;
+					}
+
+					// Ensure UI is in the proper state before restarting
+					restoreInput();
+
+					// Restart patching process
+					patchBtnClick();
+					return; // Exit early since we're restarting the process
+				}
+				catch (const std::exception& exc) {
+					MessageBox(hWnd, 
+						("Failed to delete .unlocker file: " + std::string(exc.what())).c_str(),
+						"Error", MB_OK | MB_ICONERROR);
+
+					// Make sure to restore input controls when there's an error
+					restoreInput();
+				}
+			}
+		}
+		else {
+			char msg[4096];
+			sprintf(msg, "An error occurred while applying the patch:\n%s\nCheck the log file for detailed info:\n%s", result.errorMessage.c_str(), result.logFilePath.c_str());
+			MessageBox(hWnd, msg, "Error", MB_OK | MB_ICONERROR);
+		}
 	}
 
 	if (patcherTask != nullptr)

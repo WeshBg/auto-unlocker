@@ -140,6 +140,9 @@ void loadVisualStyles()
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevINSTANCE, PSTR pCmdLine, int nCmdShow)
 {
+	InitCommonControls();
+	loadVisualStyles();
+
 	MainWindow mainWindow(hInstance, nCmdShow);
 	mainWindow.show();
 }
